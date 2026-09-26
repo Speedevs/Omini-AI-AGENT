@@ -1,0 +1,7 @@
+requests>=2.28
+# Desktop powers (browser control, screen capture). Omni still runs without them; those tools just explain what's missing.
+playwright>=1.40
+mss>=9.0
+imageio-ffmpeg>=0.4.9
+pillow>=10.0   # lets the agent draw and edit images
+chess>=1.10     # rules engine for playing chess with Omni

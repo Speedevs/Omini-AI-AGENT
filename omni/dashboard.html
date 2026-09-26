@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Omni mission control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Newsreader:opsz,wght@6..72,400;6..72,600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF1F4; --sheet:#FFFFFF; --ink:#1B2A41; --graphite:#5B6675; --rule:#D5DBE2;
+  --verified:#0E7C66; --close:#A86A12; --notfound:#B42318; --council:#5B4B8A; --live:#2F6FEB;
+  --serif:"Newsreader",Georgia,"Times New Roman",serif;
+  --sans:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --paper:#141A23; --sheet:#1C2430; --ink:#E4E9F0; --graphite:#9AA6B5; --rule:#2C3645;
+  --verified:#3CC4A2; --close:#E0A548; --notfound:#F2776B; --council:#A99BE0; --live:#6EA2FF;}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font:15px/1.5 var(--sans)}
+header{padding:28px 32px 20px;border-bottom:1px solid var(--rule)}
+.status{display:flex;flex-wrap:wrap;gap:18px;color:var(--graphite);font-size:14px;margin-bottom:10px;align-items:center}
+.pulse{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--live);margin-right:7px;vertical-align:1px}
+.working .pulse{animation:pulse 1.4s ease-in-out infinite}
+.done .pulse{background:var(--verified)}
+@keyframes pulse{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.working .pulse{animation:none}}
+h1{font:600 clamp(24px,3vw,36px)/1.2 var(--serif);margin:0;max-width:60ch}
+main{display:grid;grid-template-columns:minmax(220px,1fr) minmax(320px,1.7fr) minmax(300px,1.4fr);gap:0;min-height:calc(100vh - 140px)}
+section{padding:22px 26px;border-right:1px solid var(--rule);min-width:0}
+section:last-child{border-right:0}
+h2{font:600 19px/1.3 var(--serif);margin:0 0 12px}
+h3{font:700 13px/1.3 var(--sans);color:var(--graphite);margin:22px 0 8px}
+.empty{color:var(--graphite);font-size:14px}
+ol.plan{list-style:none;padding:0;margin:0;counter-reset:s}
+ol.plan li{counter-increment:s;padding:7px 0 7px 30px;position:relative;border-bottom:1px dashed var(--rule);font-size:14px}
+ol.plan li::before{content:counter(s);position:absolute;left:0;top:7px;width:20px;height:20px;border-radius:50%;
+  border:1.5px solid var(--graphite);font-size:11px;display:grid;place-items:center;color:var(--graphite)}
+ol.plan li.done{color:var(--graphite);text-decoration:line-through}
+ol.plan li.done::before{content:"✓";background:var(--verified);border-color:var(--verified);color:#fff}
+ol.plan li.doing{font-weight:700}
+ol.plan li.doing::before{border-color:var(--live);color:var(--live)}
+.helper{font-size:14px;padding:8px 10px;border-left:3px solid var(--live);background:var(--sheet);margin-bottom:6px}
+.helper.done{border-color:var(--verified)}
+.helper small{display:block;color:var(--graphite)}
+.file{background:var(--sheet);border:1px solid var(--rule);padding:8px;margin-bottom:8px;font-size:13px}
+.file video,.file img{display:block;width:100%;max-height:220px;object-fit:contain;background:#000;margin-bottom:6px}
+.file a{color:var(--ink);font-weight:700}
+.board{display:grid;grid-template-columns:repeat(8,1fr);width:100%;max-width:264px;aspect-ratio:1;border:2px solid var(--ink);user-select:none}
+.sq{display:grid;place-items:center;font-size:clamp(18px,2.2vw,26px);line-height:1;cursor:pointer;position:relative}
+.sq.l{background:#E9E4D4}.sq.d{background:#8CA2AD}
+.sq.sel{box-shadow:inset 0 0 0 3px var(--live)}.sq.last{box-shadow:inset 0 0 0 3px #D9A441}
+.sq.tgt::after{content:"";width:28%;height:28%;border-radius:50%;background:rgba(27,42,65,.35);position:absolute}
+.pw{color:#fff;text-shadow:0 0 1px #000,0 0 1px #000,0 0 2px #000}.pb{color:#111}
+.chess-status{font-size:13px;color:var(--graphite);margin:6px 0 4px}
+.chess-why{font-size:13px;background:var(--sheet);border-left:3px solid var(--council);padding:6px 8px;margin:6px 0}
+.chess-why small{display:block;color:var(--notfound);margin-top:3px}
+.chess-btns button{font:12px var(--sans);border:1px solid var(--rule);background:var(--sheet);color:var(--ink);padding:3px 8px;margin:4px 4px 0 0;cursor:pointer}
+.lesson{font-size:14px;padding:6px 0;border-bottom:1px dashed var(--rule)}
+.feed{display:flex;flex-direction:column;gap:2px;max-height:calc(100vh - 230px);overflow-y:auto;padding-right:6px}
+.ev{display:grid;grid-template-columns:62px 1fr;gap:10px;padding:6px 0;font-size:14px;border-bottom:1px solid var(--rule)}
+.ev time{color:var(--graphite);font-size:12px;padding-top:2px;font-variant-numeric:tabular-nums}
+.ev .k{font-weight:700;margin-right:6px}
+.ev.d1{padding-left:18px}
+.ev.d1 .k::before{content:"↳ ";color:var(--graphite)}
+.ev.k-result,.ev.k-think{color:var(--graphite)}
+.ev.k-lesson .k{color:var(--council)}
+.ev.k-gate .k{color:var(--notfound)}
+.ev.k-reflect{background:color-mix(in srgb,var(--council) 9%,transparent);border-left:3px solid var(--council);padding-left:8px;white-space:pre-line}
+.ev.k-reflect .k{color:var(--council)}
+.ev.k-ask,.ev.k-companion{background:color-mix(in srgb,var(--live) 10%,transparent);border-left:3px solid var(--live);padding-left:8px}
+.ev.k-ask .k,.ev.k-companion .k{color:var(--live)}.ev.k-proof .k{color:var(--verified)}
+.council{background:var(--sheet);border:1px solid var(--rule);border-top:3px solid var(--council);padding:12px 14px;margin:8px 0}
+.council p.q{font:600 16px/1.35 var(--serif);margin:0 0 10px}
+.views{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.views div{font-size:13px}
+.views b{display:block;color:var(--council);margin-bottom:2px}
+.trust{display:flex;align-items:baseline;gap:12px;margin-bottom:6px}
+.trust strong{font:600 54px/1 var(--serif);font-variant-numeric:tabular-nums}
+.trust span{color:var(--graphite);font-size:14px;max-width:22ch}
+.bar{display:flex;height:6px;background:var(--rule);margin-bottom:18px;overflow:hidden}
+.bar i{display:block}
+.card{background:var(--sheet);border:1px solid var(--rule);padding:14px 16px 12px;margin-bottom:12px;position:relative}
+.card p{margin:0 0 6px;font-size:14px;padding-right:128px}
+.card blockquote{margin:0 0 6px;padding-left:10px;border-left:2px solid var(--rule);color:var(--graphite);font:italic 14px/1.45 var(--serif)}
+.card a,.card .src{font-size:12px;color:var(--graphite);word-break:break-all}
+.stamp{position:absolute;right:12px;top:12px;transform:rotate(-7deg);border:2.5px solid currentColor;padding:2px 8px;
+  font:700 12px/1.2 var(--sans);letter-spacing:.04em;border-radius:3px;text-transform:uppercase;opacity:.9}
+.stamp.new{animation:stamp .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes stamp{from{transform:rotate(-7deg) scale(2.2);opacity:0}}
+@media (prefers-reduced-motion:reduce){.stamp.new{animation:none}}
+.s-verified{color:var(--verified)} .s-close{color:var(--close)} .s-notfound,.s-unreachable{color:var(--notfound)}
+.card.s-notfound-card{border-color:var(--notfound)}
+.s-retracted{color:var(--graphite)}
+.checks{margin:0 0 6px}.chk{display:inline-block;font-size:12px;border:1px solid var(--rule);padding:1px 7px;margin:0 5px 4px 0;color:var(--graphite)}
+.chk.j-supports{color:var(--verified);border-color:var(--verified)}.chk.j-partial{color:var(--close);border-color:var(--close)}
+.chk.j-contradicts,.chk.j-unrelated{color:var(--notfound);border-color:var(--notfound)}
+.num{color:var(--graphite);font-variant-numeric:tabular-nums}
+.card.s-retracted-card p{text-decoration:line-through;color:var(--graphite)}
+.card .why{font-size:13px;color:var(--notfound);margin:0 0 6px}
+.answer{margin:0 32px;padding:18px 22px;background:var(--sheet);border:1px solid var(--rule);border-left:4px solid var(--verified);
+  white-space:pre-wrap;font:16px/1.6 var(--serif);max-height:40vh;overflow:auto;display:none}
+.answer.show{display:block;margin-top:18px}
+@media (max-width:1000px){main{grid-template-columns:1fr}section{border-right:0;border-bottom:1px solid var(--rule)}
+  .views{grid-template-columns:1fr}.feed{max-height:none}}
+</style>
+</head>
+<body class="working">
+<header>
+  <div class="status" id="status"><span><span class="pulse"></span><span id="st">Waiting for a mission</span></span></div>
+  <h1 id="goal">Give Omni a goal in the terminal to begin.</h1>
+</header>
+<div class="answer" id="answer"></div>
+<main>
+  <section>
+    <h2>Plan</h2>
+    <p class="empty" id="noplan">Omni writes its plan here once it starts.</p>
+    <ol class="plan" id="plan"></ol>
+    <h3>Play while I work</h3>
+    <div id="chess"><p class="empty">Chess needs the python-chess package (included in the installer).</p></div>
+    <h3>Files for you</h3>
+    <div id="files"><p class="empty">Screenshots, recordings and other files Omni makes for you appear here.</p></div>
+    <h3>Helpers</h3>
+    <div id="agents"><p class="empty">Sub-agents appear here when Omni delegates work.</p></div>
+    <h3>Playbook lessons</h3>
+    <div id="lessons"><p class="empty">Lessons from past missions appear here.</p></div>
+  </section>
+  <section>
+    <h2>Activity</h2>
+    <div class="feed" id="feed"></div>
+  </section>
+  <section>
+    <h2>Evidence ledger</h2>
+    <div class="trust"><strong id="trust">–</strong><span>trust score from code quote checks, weighted by the blind judge</span></div>
+    <div class="bar" id="bar"></div>
+    <div id="claims"><p class="empty">Claims appear here with a stamp once Omni checks them against their source.</p></div>
+  </section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const cls=s=>({"verified":"s-verified","close match":"s-close","not found":"s-notfound","unreachable":"s-unreachable","retracted":"s-retracted"}[s]||"");
+const LABEL={think:"Thinking",update_plan:"Plan updated",run_python:"Running Python",run_shell:"Running command",
+  web_search:"Searching",fetch_url:"Reading",read_file:"Reading file",write_file:"Writing file",list_dir:"Listing",
+  remember:"Remembered",browser:"Browser",screen:"Screen",launch_app:"Opening",install_app:"Installing",uninstall_app:"Uninstalling",open_extensions_page:"Extensions page",setup_firefox:"Firefox setup",send_file:"Delivering",recall:"Recalling",delegate:"Delegating",record_claim:"Checking claim",convene_council:"Asking council",
+  result:"Result",say:"Note",claim:"Ledger",council:"Council",agent:"Helper",lesson:"Playbook",retro:"Retrospective",gate:"Grounding gate",proof:"Proof",reflect:"Reflection",ask:"Omni asks",answer:"You answered",ask_user:"Asking you",companion:"Omni says"};
+let prevStatus=[],lastFeed=0,seenCouncil=0,lastFiles=0;
+function fmt(s){const m=Math.floor(s/60);return m?`${m} min ${s%60} s`:`${s} s`}
+async function tick(){
+  let d; try{d=await (await fetch("/state",{cache:"no-store"})).json()}catch(e){$("status").innerHTML='<span><span class="pulse"></span>Lost contact with Omni. Check that it is still running in the terminal.</span>';return}
+  document.body.className=d.status==="done"?"done":"working";
+  const st=d.status==="done"?`Mission complete after ${d.step} steps`:d.status==="working"?`Working, step ${d.step}`:"Waiting for a mission";
+  $("status").innerHTML=`<span><span class="pulse"></span>${esc(st)}</span>`+(d.model?`<span>${esc(d.model)}</span><span>${fmt(d.elapsed)}</span>`:"");
+  if(d.goal)$("goal").textContent=d.goal;
+  $("plan").innerHTML=d.plan.map(p=>`<li class="${esc(p.status)}">${esc(p.step)}</li>`).join("");
+  $("noplan").hidden=d.plan.length>0;
+  if(d.agents.length)$("agents").innerHTML=d.agents.map(a=>`<div class="helper ${a.status}">${esc(a.task)}<small>${a.status==="done"?"Finished":"Working…"}</small></div>`).join("");
+  if(d.files.length!==lastFiles){lastFiles=d.files.length;if(d.files.length)
+    $("files").innerHTML=d.files.slice().reverse().map(f=>{const u="/files/"+encodeURI(f.path);
+      const media=/\.mp4$/i.test(f.path)?`<video src="${u}" controls muted playsinline></video>`:/\.(png|jpe?g|gif|webp|svg)$/i.test(f.path)?`<img src="${u}" alt="${esc(f.label)}">`:"";
+      return `<div class="file">${media}<a href="${u}" ${/\.html$/i.test(f.path)?'target="_blank" rel="noopener"':"download"}>${esc(f.label)}</a> <span class="empty">${esc(f.time)}, ${esc(f.path)}</span></div>`}).join("")}
+  if(d.lessons.length)$("lessons").innerHTML=d.lessons.slice().reverse().map(l=>`<div class="lesson">${esc(l)}</div>`).join("");
+  // feed, with council blocks inlined
+  if(d.feed.length!==lastFeed||d.council.length!==seenCouncil){
+    const f=$("feed");const atBottom=f.scrollHeight-f.scrollTop-f.clientHeight<40;let ci=0;
+    f.innerHTML=d.feed.map(e=>{
+      if(e.kind==="council"){const c=d.council[ci++];
+        return c?`<div class="council"><p class="q">${esc(c.question)}</p><div class="views">${Object.entries(c.views).map(([n,v])=>`<div><b>${n}</b>${esc(v)}</div>`).join("")}</div></div>`:""}
+      let h=`<div class="ev k-${e.kind} d${Math.min(e.depth,1)}"><time>${e.t}</time><div><span class="k">${LABEL[e.kind]||esc(e.kind)}</span>${esc(e.text)}</div></div>`;
+      return h}).join("");
+    if(atBottom||lastFeed===0)f.scrollTop=f.scrollHeight;lastFeed=d.feed.length;seenCouncil=d.council.length;
+  }
+  // ledger
+  $("trust").textContent=d.trust==null?"–":d.trust;
+  const live=d.claims.filter(c=>c.status!=="retracted"),n=live.length||1,cnt=k=>d.claims.filter(c=>c.status===k).length;
+  $("bar").innerHTML=[["verified","var(--verified)"],["close match","var(--close)"],["not found","var(--notfound)"],["unreachable","var(--notfound)"]]
+    .map(([k,c])=>`<i style="width:${100*cnt(k)/n}%;background:${c}"></i>`).join("");
+  if(d.claims.length)$("claims").innerHTML=d.claims.map((c,i)=>{const src=/^https?:/.test(c.source)?`<a href="${esc(c.source)}" target="_blank" rel="noopener">${esc(c.source)}</a>`:`<span class="src">${esc(c.source)}</span>`;
+    return `<div class="card ${cls(c.status)}-card"><span class="stamp ${cls(c.status)} ${prevStatus[i]!==c.status?"new":""}">${esc(c.status)}</span><p><span class="num">#${i+1}</span> ${esc(c.claim)}</p><div class="checks">${c.judge?`<span class="chk j-${esc(c.judge)}">Blind judge: ${esc(c.judge)}</span>`:""}${c.corroborated!=null?`<span class="chk">Other sites confirming: ${c.corroborated} of ${(c.corroborating||[]).length}</span>`:""}${c.snapshot?`<span class="chk">Snapshot sealed</span>`:""}</div>${c.judge_reason&&c.judge!=="supports"?`<div class="why">${esc(c.judge_reason)}</div>`:""}${c.reason?`<div class="why">Caught by the ledger (${esc(c.was)}), then withdrawn: ${esc(c.reason)}</div>`:""}<blockquote>“${esc(c.quote)}”</blockquote>${src}</div>`}).reverse().join("");
+  prevStatus=d.claims.map(c=>c.status);
+  if(d.answer){$("answer").textContent=d.answer;$("answer").classList.add("show")}
+  renderChess(d.chess);
+}
+
+// ---------------- chess: the AI proposes, the rules engine (code) verifies ----------------
+const GLYPH={k:"\u265A",q:"\u265B",r:"\u265C",b:"\u265D",n:"\u265E",p:"\u265F"};
+let chessSel=null,chessKey="";
+function fenBoard(fen){const rows=fen.split(" ")[0].split("/");return rows.map(r=>{const out=[];for(const c of r){if(/\d/.test(c))for(let i=0;i<+c;i++)out.push(null);else out.push(c)}return out})}
+function renderChess(c){
+  const el=$("chess");
+  if(!c||!c.available){return}
+  const key=c.fen+"|"+c.thinking+"|"+chessSel+"|"+c.log.length;
+  if(key===chessKey)return; chessKey=key;
+  const rows=fenBoard(c.fen),userWhite=c.omni_color==="black",files="abcdefgh";
+  const targets=chessSel?c.legal.filter(m=>m.startsWith(chessSel)).map(m=>m.slice(2,4)):[];
+  let sq="";
+  for(let i=0;i<8;i++)for(let j=0;j<8;j++){
+    const r=userWhite?i:7-i,f=userWhite?j:7-j,name=files[f]+(8-r),p=rows[r][f];
+    const cls=["sq",(r+f)%2?"d":"l",name===chessSel?"sel":"",c.last&&(c.last.slice(0,2)===name||c.last.slice(2,4)===name)?"last":"",targets.includes(name)?"tgt":""].join(" ");
+    sq+=`<div class="${cls}" data-sq="${name}" title="${name}">${p?`<span class="${p===p.toUpperCase()?"pw":"pb"}">${GLYPH[p.toLowerCase()]}</span>`:""}</div>`}
+  const last=[...c.log].reverse().find(e=>e.by==="omni");
+  el.innerHTML=`<div class="board" id="board">${sq}</div>
+   <div class="chess-status">${esc(c.status)}${c.caught?` · illegal AI moves caught by code: ${c.caught}`:""}</div>
+   ${last?`<div class="chess-why"><b>Omni played ${esc(last.san)}:</b> ${esc(last.why||"")}${last.note?`<small>${esc(last.note)}</small>`:""}</div>`:`<div class="chess-status">You play ${userWhite?"white":"black"}. Click a piece, then a square.</div>`}
+   <div class="chess-btns"><button data-new="black">New game (you're white)</button><button data-new="white">New game (you're black)</button></div>`;
+  el.querySelectorAll(".sq").forEach(d=>d.onclick=()=>chessClick(d.dataset.sq,c));
+  el.querySelectorAll("[data-new]").forEach(b=>b.onclick=()=>fetch("/chess/new",{method:"POST",body:JSON.stringify({omni:b.dataset.new})}).then(()=>{chessSel=null;tick()}));
+}
+function chessClick(name,c){
+  if(c.thinking||c.over)return;
+  if(chessSel&&c.legal.some(m=>m.startsWith(chessSel+name))){
+    const mv=c.legal.find(m=>m===chessSel+name+"q")||chessSel+name; chessSel=null;
+    fetch("/chess/move",{method:"POST",body:JSON.stringify({move:mv})}).then(()=>tick()); return}
+  chessSel=c.legal.some(m=>m.startsWith(name))?name:null; chessKey=""; renderChess(c)}
+tick();setInterval(tick,700);
+</script>
+</body>
+</html>

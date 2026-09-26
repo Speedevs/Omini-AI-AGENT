@@ -1,0 +1,8 @@
+Example goals to try (paste one after goal> or pass it on the command line):
+
+- Build a small website that tracks the naira exchange rate and save it in the workspace as index.html.
+- Download a public dataset on malaria cases by country, analyze trends with Python, and write a report with charts.
+- Write, test and debug a Python CLI that renames my photos by the date they were taken.
+- Research the 5 most promising approaches to cheap water desalination, compare them, and pitch a startup idea.
+- Find 3 open-source projects I could contribute to as a beginner in Python, and explain what each needs.
+- Simulate an epidemic with an SIR model, then find which intervention timing minimizes peak infections.

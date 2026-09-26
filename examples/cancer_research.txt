@@ -1,0 +1,12 @@
+Act as a research team investigating KRAS-mutant pancreatic cancer (one of the deadliest cancers).
+
+1. Search for and read recent (last 3 years) reviews, trial registries and papers on KRAS G12D and pan-RAS
+   inhibitors, and on why tumors become resistant to them. Delegate separate sub-topics to sub-agents.
+2. Build a table of drug candidates: target, mechanism, trial phase, key results, known resistance routes.
+   Save it as research/kras_candidates.md with a source URL for every row.
+3. Think across fields: list at least 5 non-obvious hypotheses for overcoming resistance
+   (e.g. combination logic, ideas borrowed from antibiotic resistance or evolutionary game theory,
+   adaptive dosing). For each, give the rationale, the strongest counter-argument, and a cheap
+   experiment a lab could run to test it.
+4. Save everything to research/report.md, clearly marking what is established vs. speculative.
+Remember key findings for future runs.

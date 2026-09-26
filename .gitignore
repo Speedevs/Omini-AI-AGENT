@@ -1,0 +1,12 @@
+# Secrets: NEVER commit your .env (it holds your API keys)
+.env
+*.key
+
+# Local environment and generated data
+.venv/
+venv/
+workspace/
+__pycache__/
+*.pyc
+*.log
+.DS_Store
